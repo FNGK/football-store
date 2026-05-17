@@ -3,14 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: [],
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/:path*`,
-      },
-    ];
-  },
+  // Do not rewrite /api/* to the backend — auth and /api/v1/* use Next.js Route Handlers.
 };
 
 export default nextConfig;

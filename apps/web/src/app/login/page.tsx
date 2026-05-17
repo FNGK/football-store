@@ -20,8 +20,19 @@ function LoginForm() {
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
-      const data = await res.json();
-      setError(typeof data.detail === "string" ? data.detail : "Login failed");
+      let message = "Login failed";
+      try {
+        const data = await res.json();
+        if (typeof data.detail === "string") {
+          message = data.detail;
+        } else if (data.detail === "Not Found") {
+          message =
+            "API unreachable or misconfigured. Start the API (port 8000) and ensure NEXT_PUBLIC_API_URL is set.";
+        }
+      } catch {
+        message = "Cannot reach the login service. Is the API running on port 8000?";
+      }
+      setError(message);
       return;
     }
     router.push(params.get("from") ?? "/");

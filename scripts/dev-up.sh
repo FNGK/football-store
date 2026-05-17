@@ -22,14 +22,22 @@ start_web() {
 
 start_api() {
   if curl -sf http://127.0.0.1:8000/health >/dev/null 2>&1; then
-    echo "API already running on http://localhost:8000"
-    return
+    if curl -sf http://127.0.0.1:8000/openapi.json | grep -q '/v1/auth/login'; then
+      echo "API already running on http://localhost:8000"
+      return
+    fi
+    echo "Stopping stale API (missing auth routes)..."
+    pkill -f "uvicorn app.main:app" 2>/dev/null || true
+    sleep 1
   fi
   echo "Starting API on port 8000..."
   cd "$ROOT/apps/api"
   [ -f .env ] || cp .env.example .env
-  nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/amp-api.log 2>&1 &
+  [ -f .env ] || "$ROOT/scripts/generate-env.sh" "$ROOT/apps/api/.env"
+  export PYTHONPATH="$ROOT/apps/api"
+  nohup bash -c "cd '$ROOT/apps/api' && PYTHONPATH='$ROOT/apps/api' python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000" > /tmp/amp-api.log 2>&1 &
   echo $! > /tmp/amp-api.pid
+  sleep 3
 }
 
 start_web
