@@ -1,1 +1,0 @@
-# Streamlit layout for About page
