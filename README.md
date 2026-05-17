@@ -60,15 +60,15 @@ VS Code / Cursor also recommends the **AWS Toolkit** extension via [`.vscode/ext
 ## Quick start
 
 ```bash
-# API
-cd apps/api && python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-cp .env.example .env
-uvicorn app.main:app --reload
+./scripts/generate-env.sh apps/api/.env   # once — creates JWT secret
+docker compose up postgres -d
+./scripts/dev-up.sh
 
-# Web
-cd apps/web && pnpm install && pnpm dev
+# Login at http://localhost:3000/login
+# Default: admin@example.com / ChangeMeNow123!  (change in apps/api/.env)
 ```
+
+Production deploy: see [docs/PRODUCTION.md](docs/PRODUCTION.md).
 
 ## Phases (blueprint)
 

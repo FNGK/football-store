@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "cursor/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: amp
+          POSTGRES_PASSWORD: amp
+          POSTGRES_DB: amp_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U amp -d amp_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install API dependencies
+        run: |
+          pip install -e "apps/api[dev]"
+          pip install asyncpg alembic sqlalchemy fastapi uvicorn python-jose passlib bcrypt slowapi httpx pydantic pydantic-settings email-validator langgraph numpy cryptography
+      - name: Run migrations and tests
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql+asyncpg://amp:amp@localhost:5432/amp_test
+          JWT_SECRET_KEY: ci-jwt-secret-key-at-least-thirty-two-characters-long
+          BOOTSTRAP_ADMIN_EMAIL: test-admin@amp.local
+          BOOTSTRAP_ADMIN_PASSWORD: TestAdmin123!
+          AGENTS_ENABLED: "false"
+        run: |
+          alembic upgrade head
+          pytest -q
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - name: Install and build web
+        run: |
+          cd apps/web
+          pnpm install
+          pnpm build

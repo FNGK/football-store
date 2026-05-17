@@ -3,8 +3,8 @@ from uuid import UUID
 from fastapi import APIRouter, status
 from pydantic import BaseModel, Field
 
-from app.db.models import ConversionSource, FeedbackCategory
-from app.deps import DbSession, TenantId
+from app.db.models import ConversionEvent, ConversionSource
+from app.deps import Auth, DbSession
 
 router = APIRouter(prefix="/v1/crm", tags=["Master CRM"])
 
@@ -21,7 +21,7 @@ class ConsentConversionIn(BaseModel):
 class ConsentConversionOut(BaseModel):
     id: UUID
     source: ConversionSource
-    tenant_id: str
+    tenant_id: UUID
 
 
 @router.post(
@@ -32,13 +32,14 @@ class ConsentConversionOut(BaseModel):
 )
 async def ingest_conversion(
     payload: ConsentConversionIn,
-    tenant_id: TenantId,
+    auth: Auth,
     db: DbSession,
 ) -> ConsentConversionOut:
-    from app.db.models import ConversionEvent
+    if payload.source == ConversionSource.MODELED:
+        pass  # optimizers must not treat modeled as observed — enforced at analytics layer
 
     event = ConversionEvent(
-        tenant_id=tenant_id,
+        tenant_id=auth.tenant_id,
         gclid=payload.gclid,
         fbclid=payload.fbclid,
         consent_ad_storage=payload.consent_ad_storage,
@@ -47,6 +48,6 @@ async def ingest_conversion(
         value_usd=str(payload.value_usd) if payload.value_usd is not None else None,
     )
     db.add(event)
-    await db.commit()
+    await db.flush()
     await db.refresh(event)
-    return ConsentConversionOut(id=event.id, source=event.source, tenant_id=tenant_id)
+    return ConsentConversionOut(id=event.id, source=event.source, tenant_id=auth.tenant_id)
