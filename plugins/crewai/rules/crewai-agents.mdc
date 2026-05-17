@@ -1,0 +1,14 @@
+---
+description: CrewAI patterns for parallel marketing build agents in this monorepo
+alwaysApply: true
+globs: ["packages/agents/**", "apps/api/app/routers/agents.py"]
+---
+
+# CrewAI in AMP
+
+- Build agents live in `packages/agents/amp_agents/crew_build.py` — SEO, Content, Web run with `Process.parallel`.
+- LangGraph handles **intake/orchestration**; CrewAI handles **parallel creative** generation — do not duplicate orchestration in Crew tasks.
+- All crew kickoffs must include `tenant_id` in task descriptions and outputs.
+- Use MCP tools sparingly — register schemas in `amp_shared.mcp_rug_pull` before agent use.
+- Prefer YAML-first crew definitions when scaffolding new crews; align with `crewai create crew` layout.
+- Reference live docs via **crewai-docs** MCP or `https://docs.crewai.com/llms.txt` — never guess API signatures.

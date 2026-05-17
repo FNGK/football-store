@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.Python
+
+# Build
+.next/
+out/
+dist/
+build/
+*.egg-info/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & data
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+data/
+*.db
+
+# Firecracker / infra
+*.sock
+firecracker/
+
+# Secrets
+*.pem
+*.key
+credentials.json
