@@ -5,7 +5,7 @@ from fastapi import APIRouter, status
 from pydantic import BaseModel, Field
 
 from app.db.models import FeedbackCategory, FeedbackTicket
-from app.deps import DbSession, TenantId
+from app.deps import Auth, DbSession
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class FeedbackIn(BaseModel):
 
 class FeedbackOut(BaseModel):
     id: UUID
-    tenant_id: str
+    tenant_id: UUID
     alert_sent: bool = True
 
 
@@ -32,24 +32,26 @@ class FeedbackOut(BaseModel):
 )
 async def submit_feedback(
     payload: FeedbackIn,
-    tenant_id: TenantId,
+    auth: Auth,
     db: DbSession,
 ) -> FeedbackOut:
     category = FeedbackCategory(payload.category)
     ticket = FeedbackTicket(
-        tenant_id=tenant_id,
+        tenant_id=auth.tenant_id,
+        user_id=auth.user_id,
         category=category,
         subject=payload.subject,
         body=payload.body,
     )
     db.add(ticket)
-    await db.commit()
+    await db.flush()
     await db.refresh(ticket)
     logger.warning(
-        "ADMIN_ALERT tenant=%s category=%s subject=%s id=%s",
-        tenant_id,
+        "ADMIN_ALERT tenant=%s user=%s category=%s subject=%s id=%s",
+        auth.tenant_id,
+        auth.user_id,
         category.value,
         payload.subject,
         ticket.id,
     )
-    return FeedbackOut(id=ticket.id, tenant_id=tenant_id)
+    return FeedbackOut(id=ticket.id, tenant_id=auth.tenant_id)

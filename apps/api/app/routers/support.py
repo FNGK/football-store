@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from app.deps import TenantId
+from app.deps import Auth
 
 router = APIRouter(prefix="/v1", tags=["Support"])
 
@@ -28,7 +28,7 @@ class SupportChatOut(BaseModel):
     response_model=SupportChatOut,
     summary="Documentation-only support agent",
 )
-async def support_chat(payload: SupportChatIn, tenant_id: TenantId) -> SupportChatOut:
+async def support_chat(payload: SupportChatIn, auth: Auth) -> SupportChatOut:
     lower = payload.message.lower()
     if any(k in lower for k in REDIRECT_KEYWORDS):
         return SupportChatOut(redirect_to_feedback=True)
@@ -39,7 +39,7 @@ async def support_chat(payload: SupportChatIn, tenant_id: TenantId) -> SupportCh
 
     return SupportChatOut(
         reply=(
-            f"Tenant {tenant_id}: I can help with monitoring agents, budget parameters, "
+            f"Tenant {auth.tenant_slug}: I can help with monitoring agents, budget parameters, "
             "and control surfaces. Try asking about 'monitor', 'budget', or 'plan'."
         )
     )

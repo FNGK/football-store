@@ -1,25 +1,45 @@
+import { cookies } from "next/headers";
 import { InteractivePlan } from "@/components/interactive-plan";
+import { LogoutButton } from "@/components/logout-button";
 import { SupportBot } from "@/components/support-bot";
+import { ACCESS_COOKIE, getApiBase } from "@/lib/auth";
 import Link from "next/link";
 
-const DEMO_TENANT = "demo-tenant";
+async function getSession() {
+  const jar = await cookies();
+  const token = jar.get(ACCESS_COOKIE)?.value;
+  if (!token) return null;
+  const res = await fetch(`${getApiBase()}/v1/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  return res.json() as Promise<{ email: string; tenant_slug: string }>;
+}
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getSession();
+
   return (
     <main className="min-h-screen">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <h1 className="text-lg font-semibold">Agentic Marketing Control Plane</h1>
-          <nav className="flex gap-4 text-sm text-muted-foreground">
+          <div>
+            <h1 className="text-lg font-semibold">Agentic Marketing Control Plane</h1>
+            {session && (
+              <p className="text-xs text-muted-foreground">
+                {session.email} · {session.tenant_slug}
+              </p>
+            )}
+          </div>
+          <nav className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="#plan" className="hover:text-foreground">
               Campaign plan
             </Link>
             <Link href="#how-to" className="hover:text-foreground">
               How to use
             </Link>
-            <Link href="#support" className="hover:text-foreground">
-              Support
-            </Link>
+            <LogoutButton />
           </nav>
         </div>
       </header>
@@ -56,7 +76,7 @@ export default function DashboardPage() {
         </section>
 
         <aside id="support" className="space-y-6">
-          <SupportBot tenantId={DEMO_TENANT} />
+          <SupportBot />
         </aside>
       </div>
 
@@ -65,15 +85,15 @@ export default function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <HowToCard
             title="Monitor agents"
-            body="Watch LangGraph workflow status, Safe Mode triggers, and token budgets on the control plane API. Circuit breakers downgrade to read-only when limits breach."
+            body="Watch LangGraph workflow status, Safe Mode triggers, and token budgets on the control plane API."
           />
           <HowToCard
             title="Adjust budgets"
-            body="Set MVG caps, minimum liquidity per campaign, and AI CMO overlap rules. Financial writes require idempotency keys."
+            body="Set MVG caps, minimum liquidity per campaign, and AI CMO overlap rules."
           />
           <HowToCard
             title="Control surfaces"
-            body="Edit Interactive Plans instead of approving chat transcripts. Use Undo before Approve to avoid rubber-stamping."
+            body="Edit Interactive Plans; use Undo before Approve."
           />
         </div>
       </section>

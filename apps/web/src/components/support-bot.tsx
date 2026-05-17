@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 
 type Message = { role: "user" | "assistant"; content: string };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-export function SupportBot({ tenantId }: { tenantId: string }) {
+export function SupportBot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -25,12 +23,9 @@ export function SupportBot({ tenantId }: { tenantId: string }) {
     setInput("");
     setMessages((m) => [...m, { role: "user", content: userMsg }]);
 
-    const res = await fetch(`${API_BASE}/v1/support/chat`, {
+    const res = await fetch("/api/v1/support/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Tenant-Id": tenantId,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: userMsg }),
     });
     const data = await res.json();
@@ -50,12 +45,9 @@ export function SupportBot({ tenantId }: { tenantId: string }) {
   };
 
   const submitFeedback = async () => {
-    await fetch(`${API_BASE}/v1/feedback`, {
+    await fetch("/api/v1/feedback", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Tenant-Id": tenantId,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(feedback),
     });
     setShowFeedback(false);
