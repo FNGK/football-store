@@ -1,0 +1,16 @@
+{
+  "name": "agentic-marketing-platform",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Multi-tenant Agentic Digital Marketing Platform with Master CRM",
+  "scripts": {
+    "dev:web": "pnpm --filter @amp/web dev",
+    "dev:api": "cd apps/api && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "build:web": "pnpm --filter @amp/web build",
+    "lint:web": "pnpm --filter @amp/web lint"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

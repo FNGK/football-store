@@ -1,0 +1,16 @@
+{
+  "name": "Agentic Marketing Platform",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "forwardPorts": [3000, 8000, 5432, 8081],
+  "postCreateCommand": "corepack enable && pip install -e apps/api && cd apps/web && pnpm install",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": false
+      }
+    }
+  }
+}

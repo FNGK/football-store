@@ -1,0 +1,31 @@
+# Agentic Digital Marketing Platform — Production Guardrails
+
+## Data access
+- NEVER use raw SQL in application code. Use SQLAlchemy ORM, repository pattern, or query builders with parameterized statements only.
+- All database queries MUST filter by `tenant_id`. No global queries without tenant scope.
+- LangGraph checkpoints and thread IDs MUST be namespaced with `{tenant_id}:` prefix.
+
+## Architecture
+- Use dependency injection (FastAPI `Depends`, constructor injection in Python services).
+- All public HTTP routes MUST declare OpenAPI metadata (`summary`, `response_model`, `tags`).
+- Enforce strict tenant isolation at API middleware, repository, and agent layers.
+
+## Security
+- Agents authenticate with proof-of-possession (DPoP/mTLS) tokens — never human OAuth flows for autonomous execution.
+- MCP tool schemas MUST be hash-verified before invocation; block on rug-pull drift.
+- PII MUST pass through the NER gateway before reaching core LLMs.
+- Financial write actions REQUIRE idempotency keys.
+
+## Agent runtime
+- Code execution ONLY in Firecracker microVM sandboxes — never standard Docker for agent-generated code.
+- On guardrail breach or network timeout: circuit breaker → Safe Mode (read-only).
+- Enforce MVG: token budgets, wall-clock limits, behavioral caps, predictive pre-step reservations.
+
+## Marketing & compliance
+- Label conversions as `observed` vs `modeled` (Consent Mode v2); never optimize on modeled data alone.
+- Generative outputs MUST pass FTC/CMA compliance checks at inference layer.
+- Competitive intelligence ingestion MUST run embedding-based IPI anomaly detection.
+
+## Code quality
+- Match existing patterns; minimal scope per change.
+- Do not auto-format during agent operations if formatters conflict with Review Tab.

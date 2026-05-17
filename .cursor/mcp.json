@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+    "adkit-draft": {
+      "comment": "Draft-first AdKit MCP — configure URL and PoP token when AdKit server is provisioned",
+      "url": "${ADKIT_MCP_URL}",
+      "headers": {
+        "Authorization": "DPoP ${ADKIT_POP_TOKEN}",
+        "X-Schema-Version": "1"
+      }
+    }
+  },
+  "security": {
+    "agentAuth": "proof-of-possession",
+    "rugPullDetection": {
+      "enabled": true,
+      "hashAlgorithm": "sha256",
+      "onDrift": "block_and_alert"
+    }
+  }
+}

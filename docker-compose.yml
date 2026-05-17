@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: amp
+      POSTGRES_PASSWORD: amp
+      POSTGRES_DB: amp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://amp:amp@postgres:5432/amp
+    depends_on:
+      - postgres
+
+  sgtm:
+    build:
+      context: ./services/sgtm
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+
+volumes:
+  pgdata:
