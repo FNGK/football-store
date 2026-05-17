@@ -39,6 +39,24 @@ services/sgtm     Click ID persistence (gclid/fbclid cookies)
 infra/sandbox     Firecracker runner interface
 ```
 
+## Cursor plugins (AWS + CrewAI)
+
+This repo ships project plugins under [`plugins/aws`](plugins/aws) and [`plugins/crewai`](plugins/crewai), registered in [`.cursor-plugin/marketplace.json`](.cursor-plugin/marketplace.json).
+
+| Plugin | MCP / capabilities |
+|--------|-------------------|
+| **aws** | AWS MCP Server via `uvx mcp-proxy-for-aws` (IAM SigV4) |
+| **crewai** | CrewAI docs MCP + skills (`getting-started`, `design-agent`, `design-task`, `ask-docs`) |
+
+**Setup**
+
+1. Import the repo as a team marketplace in **Cursor → Settings → Plugins**, or install each plugin from `plugins/*`.
+2. Configure AWS: `aws configure` or `aws sso login`; set `AWS_REGION` in `.env`.
+3. Optional: `./scripts/install-cursor-plugins.sh` for official `crewaiinc/skills` via npx.
+4. See [`AGENTS.md`](AGENTS.md) for assistant conventions.
+
+VS Code / Cursor also recommends the **AWS Toolkit** extension via [`.vscode/extensions.json`](.vscode/extensions.json).
+
 ## Quick start
 
 ```bash

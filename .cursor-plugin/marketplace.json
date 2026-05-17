@@ -1,0 +1,26 @@
+{
+  "name": "amp-integrations",
+  "owner": {
+    "name": "Agentic Marketing Platform"
+  },
+  "metadata": {
+    "description": "AWS infrastructure and CrewAI agent development plugins for this monorepo",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "aws",
+      "source": "plugins/aws",
+      "description": "AWS MCP Server (IAM), Firecracker sandbox rules, and deployment skills",
+      "category": "infrastructure",
+      "keywords": ["aws", "firecracker", "mcp", "iam", "cdk"]
+    },
+    {
+      "name": "crewai",
+      "source": "plugins/crewai",
+      "description": "CrewAI docs MCP, agent design skills, and LangGraph/Crew orchestration rules",
+      "category": "ai",
+      "keywords": ["crewai", "agents", "mcp", "langgraph", "skills"]
+    }
+  ]
+}

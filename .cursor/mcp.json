@@ -7,6 +7,22 @@
         "DATABASE_URL": "${DATABASE_URL}"
       }
     },
+    "aws-mcp": {
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@latest",
+        "https://aws-mcp.us-east-1.api.aws/mcp",
+        "--metadata",
+        "AWS_REGION=${AWS_REGION}"
+      ],
+      "env": {
+        "AWS_REGION": "${AWS_REGION:-us-east-1}",
+        "AWS_PROFILE": "${AWS_PROFILE:-default}"
+      }
+    },
+    "crewai-docs": {
+      "url": "https://docs.crewai.com/mcp"
+    },
     "adkit-draft": {
       "comment": "Draft-first AdKit MCP — configure URL and PoP token when AdKit server is provisioned",
       "url": "${ADKIT_MCP_URL}",

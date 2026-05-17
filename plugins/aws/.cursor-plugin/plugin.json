@@ -1,0 +1,14 @@
+{
+  "name": "aws",
+  "displayName": "AWS (AMP)",
+  "version": "1.0.0",
+  "description": "AWS MCP Server, Agent Toolkit skills, and Firecracker-first infrastructure rules for the marketing platform.",
+  "author": {
+    "name": "Agentic Marketing Platform"
+  },
+  "homepage": "https://docs.aws.amazon.com/agent-toolkit/latest/userguide/mcp-server.html",
+  "keywords": ["aws", "mcp", "firecracker", "iam", "infrastructure"],
+  "rules": "./rules/",
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json"
+}

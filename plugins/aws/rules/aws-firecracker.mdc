@@ -1,0 +1,14 @@
+---
+description: AWS and Firecracker execution standards for agent-generated infrastructure and code
+alwaysApply: true
+globs: ["infra/**", "packages/agents/**", "apps/api/**"]
+---
+
+# AWS + Firecracker guardrails
+
+- Agent-generated **code execution** uses **AWS Firecracker microVMs** only — never Docker for untrusted agent scripts.
+- Prefer **AWS CDK or CloudFormation** over raw CLI one-offs for durable infrastructure.
+- IAM policies must be **least privilege**; never use `*` on `Action` or `Resource` for production paths.
+- Use the **AWS MCP Server** (`call_aws`, `search_documentation`) for live docs — training data is stale for new services (e.g. S3 Vectors).
+- Mutating AWS API calls from agents require **idempotency keys** and tenant-scoped resource naming (`${tenant_id}-*`).
+- CloudWatch namespace `AWS-MCP` and CloudTrail must remain enabled for agent vs human audit separation.

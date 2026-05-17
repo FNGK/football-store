@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "amazonwebservices.aws-toolkit-vscode",
+    "amazonwebservices.amazon-q-vscode",
+    "ms-python.python",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss"
+  ]
+}
